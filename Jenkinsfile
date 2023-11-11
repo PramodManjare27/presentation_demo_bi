@@ -1,10 +1,11 @@
-//this is demo jenkinsfile
-pipeline{
- stages {
-stage ("test") {
-  echo ("testing")
-  }
-   
- }
-  
-}
+pipeline {
+    agent any
+    stages {
+        stage('compile') {
+			steps {
+                echo 'compiling..'
+		          }
+        }
+                
+        }
+    }
