@@ -1,11 +1,18 @@
 pipeline {
     agent any
     stages {
-        stage('compile') {
+        stage('checkout') {
 			steps {
-                echo 'compiling..'
+                echo 'checkout of scm'
 		          }
         }
+       stage('packaging') {
+                        steps {
+                echo 'running build.sh'
+                bat '"C:\Program Files\Git\git-bash.exe" C:\Users\admin\git_checkouts\test.sh'
+                          }
+        }
+
                 
         }
     }
