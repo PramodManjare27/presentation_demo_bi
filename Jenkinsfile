@@ -9,7 +9,7 @@ pipeline {
        stage('packaging') {
                         steps {
                 echo 'running build.sh'
-                bat 'git-bash.exe C:\\Users\admin\\git_checkouts\\test.sh'
+                bat 'git-bash.exe C:\\Users\admin\git_checkouts\test.sh'
                           }
         }
 
