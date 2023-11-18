@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('checkout validations') {
 			when {
-	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_*|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_*)/ }
+	            expression { BRANCH_NAME ==~ /(feature*dwh_bi_Rel_[0-9][0-9]_*|dwh_bi_Rel_[0-9][0-9]|bugfix*dwh_bi_Rel_[0-9][0-9]_*)/ }
 	            }
 			steps {
                 echo "checkout of scm at ${WORKSPACE}"
