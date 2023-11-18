@@ -15,8 +15,10 @@ pipeline {
 		        bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\checkout_validation.sh ${WORKSPACE} ${BRANCH_NAME} ${BUILD_NUMBER}"
 				
 				echo "checkout validation logs are as below :"
-				def validate_logs = readFile(file: 'build.log')
-                println(validate_logs)
+				script {
+				     def validate_logs = readFile(file: 'build.log')
+                     println(validate_logs)
+				       }
     				}
         }
         stage('packaging and artifactory push') {
@@ -27,8 +29,10 @@ pipeline {
                 echo 'running build.sh'
                 bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\artifact_processing.sh ${WORKSPACE}"
 				echo "artifact logs are as below :"
-				def artifact_log = readFile(file: 'artifact.log')
-                println(artifact_log)
+				script {
+				   def artifact_log = readFile(file: 'artifact.log')
+                   println(artifact_log)
+				}
                  }
         }
     }
