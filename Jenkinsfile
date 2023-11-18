@@ -5,11 +5,18 @@ pipeline {
     }
     stages {
         stage('checkout validations') {
+			when {
+	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_*|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_*)/ }
+	            }
 			steps {
                 echo "checkout of scm at ${WORKSPACE}"
 			    echo "Branch name is ${BRANCH_NAME}"
 				echo "Build number is ${BUILD_NUMBER}"
 		        bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\checkout_validation.sh ${WORKSPACE} ${BRANCH_NAME} ${BUILD_NUMBER}"
+				
+				echo "checkout validation logs are as below :"
+				def validate_logs = readFile(file: 'build.log')
+                println(validate_logs)
     				}
         }
         stage('packaging and artifactory push') {
@@ -19,6 +26,9 @@ pipeline {
            steps {
                 echo 'running build.sh'
                 bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\artifact_processing.sh ${WORKSPACE}"
+				echo "artifact logs are as below :"
+				def artifact_log = readFile(file: 'artifact.log')
+                println(artifact_log)
                  }
         }
     }
