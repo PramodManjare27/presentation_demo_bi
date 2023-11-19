@@ -6,8 +6,11 @@ pipeline {
     stages {
         stage('checkout validations') {
 			when {
-	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
-	            }
+	            allOf {
+				expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
+				expression { BUILD_NUMBER != '1'}
+				      }
+				}
 			steps {
                 echo "checkout of scm at ${WORKSPACE}"
 			    echo "Branch name is ${BRANCH_NAME}"
@@ -18,7 +21,7 @@ pipeline {
 				script {
 				     def validate_logs = readFile(file: 'build.log')
                      println(validate_logs)
-					  def data = readFile(file: 'failure_checkout.log')
+					  def data = readFile(file: 'failure_checkout.log').trim()
                       println(data)
 					  if (data == 'Y') {
                         echo 'Failed in checkout validations.. exiting'
@@ -30,9 +33,12 @@ pipeline {
     				}
         }
         stage('packaging and artifactory push') {
-	       when {
-	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
-	            }
+			when {
+	            allOf {
+				expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
+				expression { BUILD_NUMBER != '1'}
+				      }
+				}
            steps {
                 echo 'running build.sh'
                 bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\artifact_processing.sh ${WORKSPACE} ${BRANCH_NAME}"
