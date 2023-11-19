@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('checkout validations') {
 			when {
-	            expression { BRANCH_NAME ==~ /(feature*dwh_bi_Rel_[0-9][0-9]_*|dwh_bi_Rel_[0-9][0-9]|bugfix*dwh_bi_Rel_[0-9][0-9]_*)/ }
+	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
 	            }
 			steps {
                 echo "checkout of scm at ${WORKSPACE}"
@@ -18,16 +18,24 @@ pipeline {
 				script {
 				     def validate_logs = readFile(file: 'build.log')
                      println(validate_logs)
+					  def data = readFile(file: 'failure_checkout.log')
+                      println(data)
+					  if (data == 'Y') {
+                        echo 'Failed in checkout validations.. exiting'
+						error "Checkout Validation Stage has failed..."
+                    } else {
+                        echo 'Suceeded in checkout validations.. proceeding with next stage...'
+                    }
 				       }
     				}
         }
         stage('packaging and artifactory push') {
 	       when {
-	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_*|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_*)/ }
+	            expression { BRANCH_NAME ==~ /(feature\/dwh_bi_Rel_[0-9][0-9]_.*$|dwh_bi_Rel_[0-9][0-9]|bugfix\/dwh_bi_Rel_[0-9][0-9]_.*$)/ }
 	            }
            steps {
                 echo 'running build.sh'
-                bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\artifact_processing.sh ${WORKSPACE}"
+                bat "set PATH=C:\\Program Files\\Git\\;%PATH% && git-bash.exe C:\\Users\\admin\\git_checkouts\\artifact_processing.sh ${WORKSPACE} ${BRANCH_NAME}"
 				echo "artifact logs are as below :"
 				script {
 				   def artifact_log = readFile(file: 'artifact.log')
